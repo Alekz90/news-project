@@ -6,7 +6,7 @@ plugins {
 }
 
 version = '1.0.3'
-description = 'News project for portfolio'
+description = 'Microservice that permits the News consumption'
 
 repositories {
 	mavenCentral()
@@ -17,9 +17,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'redis.clients:jedis:7.4.0'
     runtimeOnly 'org.postgresql:postgresql'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-redis-test'

@@ -15,12 +15,6 @@ java {
 	}
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 subprojects {
     apply plugin: "java"
     apply plugin: "io.spring.dependency-management"
@@ -31,6 +25,12 @@ subprojects {
 
     ext {
         set('springCloudVersion', "2025.1.0")
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
 
     dependencies {
@@ -46,6 +46,9 @@ subprojects {
         testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
         testImplementation 'org.springframework.boot:spring-boot-starter-actuator-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+        testCompileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
     }
 
     dependencyManagement {

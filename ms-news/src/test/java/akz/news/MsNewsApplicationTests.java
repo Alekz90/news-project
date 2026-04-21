@@ -17,20 +17,20 @@ import static org.mockito.Mockito.mockStatic;
 
 @SpringBootTest
 @ActiveProfiles(TEST_PROFILE)
-@DisplayName("MS news Application Test")
+@DisplayName("MS News Application Test")
 @ImportAutoConfiguration(exclude = { DataRedisAutoConfiguration.class, FeignAutoConfiguration.class })
 class MsNewsApplicationTests {
 
   @MockitoBean
   private INewsRtoRepository repositoryMock;
 
-	@Test
-	void contextLoads() {
+  @Test
+  @DisplayName("Context load")
+  void contextLoads() {
     try (MockedStatic<SpringApplication> mockedSpringApplication = mockStatic(SpringApplication.class)) {
       String[] args = {};
       MsNewsApplication.main(args);
       mockedSpringApplication.verify(() -> SpringApplication.run(MsNewsApplication.class, args));
     }
-	}
-
+  }
 }
