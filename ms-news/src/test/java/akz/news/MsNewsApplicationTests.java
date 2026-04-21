@@ -21,14 +21,16 @@ import static org.mockito.Mockito.mockStatic;
 @ImportAutoConfiguration(exclude = { DataRedisAutoConfiguration.class, FeignAutoConfiguration.class })
 class MsNewsApplicationTests {
 
-	@Test
+  @MockitoBean
+  private INewsRtoRepository repositoryMock;
+
+  @Test
   @DisplayName("Context load")
-	void contextLoads() {
+  void contextLoads() {
     try (MockedStatic<SpringApplication> mockedSpringApplication = mockStatic(SpringApplication.class)) {
       String[] args = {};
       MsNewsApplication.main(args);
       mockedSpringApplication.verify(() -> SpringApplication.run(MsNewsApplication.class, args));
     }
-	}
-
+  }
 }
