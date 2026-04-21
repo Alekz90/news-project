@@ -1,0 +1,80 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-news
+  docker:
+    compose:
+      file: ms-news/compose.yaml
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      timeout: 5000
+  cache:
+    type: redis
+    cache-names: "top-headlines,everything-news,sources"
+    redis:
+      time-to-live: 24h
+      key-prefix: "ms-news::"
+      use-key-prefix: true
+      cache-null-values: true
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  default-consumes-media-type: 'application/json'
+  default-produces-media-type: 'application/json'
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+web-service-news:
+  api:
+    base-url: https://newsapi.org/v2/
+#    base-url: http://localhost:8081
+    key: ${NEWS_API_KEY}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      news-instance:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000ms
+        permittedNumberOfCallsInHalfOpenState: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  metrics:
+    tags:
+      application: ms-news
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: ERROR
+    org.hibernate: WARN
+    io.github.resilience4j: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/app.log
