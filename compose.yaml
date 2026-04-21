@@ -1,0 +1,94 @@
+name: news-api
+services:
+  eureka-service:
+    build:
+      context: .
+      dockerfile: ms-eureka.dockerfile
+    image: ms-eureka-img:1.0.0
+    container_name: ms-eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - news-network
+    entrypoint: ["java","-jar","app.jar"]
+
+  postgres-service:
+    image: 'postgres:15.3'
+    container_name: 'database'
+    env_file:
+      - ms-news/.env
+    environment:
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+    volumes:
+      - 'pg-news:/var/lib/postgresql/data'
+    networks:
+      - news-network
+    ports:
+      - '5432:5432'
+
+  redis-service:
+    image: redis:8.0
+    container_name: redis
+    env_file:
+      - ms-news/.env
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis-news:/data'
+    networks:
+      - news-network
+    command: ["redis-server", "--appendonly", "yes"]
+
+  news-service:
+    build:
+      context: .
+      dockerfile: ms-news.dockerfile
+    image: ms-news-img:1.0.3
+    container_name: ms-news
+    env_file:
+      - ms-news/.env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-service
+      - redis-service
+      - eureka-service
+    networks:
+      - news-network
+    environment:
+      - 'NEWS_API_KEY=${NEWS_API_KEY}'
+      - 'REDIS_HOST=redis-service'
+      - 'REDIS_PORT=${REDIS_PORT}'
+      - 'POSTGRES_HOST=postgres-service'
+      - 'POSTGRES_PORT=${POSTGRES_PORT}'
+      - 'POSTGRES_DB=${POSTGRES_DB}'
+      - 'POSTGRES_USER=${POSTGRES_USER}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}'
+      - 'EUREKA_HOST=http://eureka-service:8761/eureka/'
+    #entrypoint: ["java","-jar","app.jar"]
+
+volumes:
+  pg-news:
+    name: pg-news
+  redis-news:
+    name: redis-news
+
+networks:
+  news-network:
+    name: news-network
+
+# ------------------------------------------------------------------------------------
+
+# Move to the directory
+# cd C:/Projects/News/News-project
+
+# "--build" forced the image building
+# "--env-file .env" environment file
+# Build and run the containers
+# docker compose up -d
+
+# To stop and remove the containers
+# docker compose down
+

@@ -43,10 +43,16 @@ springdoc:
   swagger-ui:
     enabled: true
 
+eureka:
+  client:
+    service-url:
+         defaultZone: ${EUREKA_HOST}
+    register-with-eureka: true
+    fetch-registry: true
+
 web-service-news:
   api:
     base-url: https://newsapi.org/v2/
-#    base-url: http://localhost:8081
     key: ${NEWS_API_KEY}
 
 resilience4j:
