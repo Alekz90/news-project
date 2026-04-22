@@ -36,6 +36,7 @@ subprojects {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-webmvc'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
         implementation 'io.github.resilience4j:resilience4j-micrometer'
         implementation 'io.micrometer:micrometer-registry-prometheus'

@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      discovery:
+         locator:
+           enabled: true
+           lower-case-service-id: true
+      server:
+        webmvc:
+          routes:
+            - id: ms-news
+              uri: lb://ms-news
+              predicates:
+                - Path=/ms-news/**
+              filters:
+                - RewritePath=/ms-news/(?<segment>.*), /${segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_HOST}
+
+springdoc:
+  api-docs.enabled: false
+  swagger-ui.enabled: false
