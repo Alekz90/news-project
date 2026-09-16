@@ -1,6 +1,9 @@
 server:
   port: 8080
 
+api:
+  key: ${NEWS_API_SECRET}
+
 spring:
   application:
     name: ms-gateway
@@ -19,6 +22,8 @@ spring:
                 - Path=/ms-news/**
               filters:
                 - RewritePath=/ms-news/(?<segment>.*), /${segment}
+#                - RemoveRequestHeader=X-API-KEY
+#                - TokenRelay
 
 eureka:
   client:
