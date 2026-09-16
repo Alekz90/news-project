@@ -1,0 +1,43 @@
+plugins {
+	id 'java'
+    id 'org.springframework.boot' version '4.0.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id "org.sonarqube" version "7.2.3.7755"
+    id "jacoco"
+}
+
+version = '1.0.0'
+description = 'Gateway and security for the news project'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", System.getenv('SONAR_KEY')
+        property "sonar.host.url", System.getenv('SONAR_HOST')
+        property "sonar.token", System.getenv('SONAR_TOKEN')
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+tasks.jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}

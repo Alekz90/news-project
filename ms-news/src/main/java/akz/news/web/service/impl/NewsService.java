@@ -8,18 +8,24 @@ import akz.news.web.dto.RSourcesResponse;
 import akz.news.web.dto.RTopHeadlinesResponse;
 import akz.news.web.service.INewsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class NewsService implements INewsService {
 
   private final NewsRtoService newsRtoService;
+  @Value("${server.port}")
+  private String port;
 
   @Override
   public REverythingResponse getEverything(Map<String, String> params) {
+    log.info("Port: {}.", port);
     EverythingResponse response = newsRtoService.getEverything(params);
     return new REverythingResponse(response.getTotalResults(), response.getArticles());
   }

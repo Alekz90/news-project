@@ -11,6 +11,7 @@ COPY build.gradle settings.gradle ./
 # Copy child projects
 COPY ms-eureka ./ms-eureka/
 COPY ms-news ./ms-news/
+COPY ms-gateway ./ms-gateway/
 
 # Download the dependencies and build the project
 RUN gradle :ms-news:build -x test --no-daemon || true
