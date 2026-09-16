@@ -1,0 +1,76 @@
+name: CI/CD MS-NEWS
+
+on:
+  pull_request:
+    branches: [ "master" ]
+#  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Job to test for MS-NEWS
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - # Checkout source code
+      name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - # Set up Gradle with cache
+      name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      with:
+        gradle-version: '9.0.0'
+
+    - # Set up JDK 21
+      name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - # Run tests + JaCoCo + SonarQube
+      name: Run tests
+      #run: gradle clean test --no-daemon
+      run: gradle clean test jacocoTestReport sonarqube --no-daemon
+      env:
+        SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+        SONAR_KEY: ${{ vars.SONAR_KEY }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build-image:
+    name: Job to build image for MS-NEWS
+    runs-on: ubuntu-latest
+    needs: [ tests ]
+
+    steps:
+#    - # Checkout source code
+#      name: Checkout code
+#      uses: actions/checkout@v4
+#      with:
+#        fetch-depth: 0
+
+    - # Login to Docker Hub
+      name: Login
+      uses: docker/login-action@v4
+      with:
+        username: ${{ vars.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - # Set up QEMU
+      name: Set up QEMU
+      uses: docker/setup-qemu-action@v4
+
+    - #Set up Docker Buildx
+      name: Set up Docker BuildX
+      uses: docker/setup-buildx-action@v4
+
+    - # Build and push docker image
+      name: Build and push
+      uses: docker/build-push-action@v7
+      with:
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/ms-news-img:1.0.0

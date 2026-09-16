@@ -1,0 +1,40 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
+    id "org.sonarqube"
+    id "jacoco"
+}
+
+version = '1.0.0'
+description = 'Eureka server for the news project'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", System.getenv('SONAR_KEY')
+        property "sonar.host.url", System.getenv('SONAR_HOST')
+        property "sonar.token", System.getenv('SONAR_TOKEN')
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+tasks.jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}

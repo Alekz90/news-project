@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+api:
+  key: ${NEWS_API_SECRET}
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      discovery:
+         locator:
+           enabled: true
+           lower-case-service-id: true
+      server:
+        webmvc:
+          routes:
+            - id: ms-news
+              uri: lb://ms-news
+              predicates:
+                - Path=/ms-news/**
+              filters:
+                - RewritePath=/ms-news/(?<segment>.*), /${segment}
+#                - RemoveRequestHeader=X-API-KEY
+#                - TokenRelay
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_HOST}
+
+springdoc:
+  api-docs.enabled: false
+  swagger-ui.enabled: false
